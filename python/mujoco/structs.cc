@@ -84,6 +84,102 @@ py::tuple RecompileSpec(raw::MjSpec* spec, const MjModelWrapper& old_m,
 
 }  // namespace
 
+// --------------------------- lwj -------------------------------------
+
+// ==================== MJVISUAL ===============================================
+#define X(var) var(InitPyArray(ptr_->var, owner_))
+MjVisualHeadlightWrapper::MjWrapper()
+    : WrapperBase(new raw::MjVisualHeadlight{}),
+      X(ambient),
+      X(diffuse),
+      X(specular) {}
+
+MjVisualHeadlightWrapper::MjWrapper(raw::MjVisualHeadlight* ptr,
+                                    py::handle owner)
+    : WrapperBase(ptr, owner), X(ambient), X(diffuse), X(specular) {}
+#undef X
+
+MjVisualHeadlightWrapper::MjWrapper(const MjVisualHeadlightWrapper& other)
+    : MjVisualHeadlightWrapper() {
+  *this->ptr_ = *other.ptr_;
+}
+
+#define X(var) var(InitPyArray(ptr_->var, owner_))
+MjVisualRgbaWrapper::MjWrapper()
+    : WrapperBase(new raw::MjVisualRgba{}),
+      X(fog),
+      X(haze),
+      X(force),
+      X(inertia),
+      X(joint),
+      X(actuator),
+      X(actuatornegative),
+      X(actuatorpositive),
+      X(com),
+      X(camera),
+      X(light),
+      X(selectpoint),
+      X(connect),
+      X(contactpoint),
+      X(contactforce),
+      X(contactfriction),
+      X(contacttorque),
+      X(contactgap),
+      X(rangefinder),
+      X(constraint),
+      X(slidercrank),
+      X(crankbroken),
+      X(frustum) {}
+
+MjVisualRgbaWrapper::MjWrapper(raw::MjVisualRgba* ptr, py::handle owner)
+    : WrapperBase(ptr, owner),
+      X(fog),
+      X(haze),
+      X(force),
+      X(inertia),
+      X(joint),
+      X(actuator),
+      X(actuatornegative),
+      X(actuatorpositive),
+      X(com),
+      X(camera),
+      X(light),
+      X(selectpoint),
+      X(connect),
+      X(contactpoint),
+      X(contactforce),
+      X(contactfriction),
+      X(contacttorque),
+      X(contactgap),
+      X(rangefinder),
+      X(constraint),
+      X(slidercrank),
+      X(crankbroken),
+      X(frustum) {}
+#undef X
+
+MjVisualRgbaWrapper::MjWrapper(const MjVisualRgbaWrapper& other)
+    : MjVisualRgbaWrapper() {
+  *this->ptr_ = *other.ptr_;
+}
+
+MjVisualWrapper::MjWrapper()
+    : WrapperBase(new raw::MjVisual{}),
+      headlight(&ptr_->headlight, owner_),
+      rgba(&ptr_->rgba, owner_) {}
+
+MjVisualWrapper::MjWrapper(raw::MjVisual* ptr, py::handle owner)
+    : WrapperBase(ptr, owner),
+      headlight(&ptr_->headlight, owner_),
+      rgba(&ptr_->rgba, owner_) {}
+
+MjVisualWrapper::MjWrapper(const MjVisualWrapper& other) : MjVisualWrapper() {
+  *this->ptr_ = *other.ptr_;
+}
+
+// --------------------------- lwj -------------------------------------
+
+
 PYBIND11_MODULE(_structs, m) {
   py::module_::import("mujoco._enums");
 

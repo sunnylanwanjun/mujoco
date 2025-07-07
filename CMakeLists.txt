@@ -195,7 +195,10 @@ add_subdirectory(model)
 # TODO: Remove this order dependency.
 if(MUJOCO_BUILD_SIMULATE)
   add_subdirectory(simulate)
+  #add_subdirectory(python/dist/mujoco-3.3.4/mujoco/simulate)
 endif()
+
+#add_subdirectory(python/dist/mujoco-3.3.4/mujoco)
 
 if(MUJOCO_BUILD_EXAMPLES)
   add_subdirectory(sample)
@@ -210,6 +213,7 @@ if(BUILD_TESTING AND MUJOCO_BUILD_TESTS)
   add_subdirectory(test)
   if(MUJOCO_TEST_PYTHON_UTIL)
     add_subdirectory(python/mujoco/util)
+    #add_subdirectory(python/dist/mujoco-3.3.4/mujoco/util)
   endif()
 endif()
 
