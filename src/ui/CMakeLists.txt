@@ -12,5 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(MUJOCO_UI_SRCS ui_main.c ui_main.h)
+if(MUJOCO_WITH_VK)
+    set(MUJOCO_UI_SRCS ui_main_vk.c ui_main.h)
+else()
+    set(MUJOCO_UI_SRCS ui_main.c ui_main.h)
+endif()
+
 target_sources(mujoco PRIVATE ${MUJOCO_UI_SRCS})

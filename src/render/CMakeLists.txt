@@ -12,23 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(MUJOCO_RENDER_SRCS
-    glad/glad.c
-    glad/glad.h
-    glad/loader.cc
-    render_context.c
-    render_context.h
-    render_gl2.c
-    render_gl2.h
-    render_gl3.c
-    render_gl3.h
-    render_util.c
-    render_util.h
-)
+if(MUJOCO_WITH_VK)
 
-target_sources(mujoco PRIVATE ${MUJOCO_RENDER_SRCS})
+  set(MUJOCO_RENDER_SRCS
+      render_context_vk.c
+      render_context.h
+      render_vk2.c
+      render_vk2.h
+      render_vk3.c
+      render_vk3.h
+  )
 
-# GLAD needs dlopen/dlsym
-if(CMAKE_DL_LIBS)
-  target_link_libraries(mujoco PRIVATE ${CMAKE_DL_LIBS})
+  target_sources(mujoco PRIVATE ${MUJOCO_RENDER_SRCS})
+
+else()
+
+  set(MUJOCO_RENDER_SRCS
+      glad/glad.c
+      glad/glad.h
+      glad/loader.cc
+      render_context.c
+      render_context.h
+      render_gl2.c
+      render_gl2.h
+      render_gl3.c
+      render_gl3.h
+      render_util.c
+      render_util.h
+  )
+
+  target_sources(mujoco PRIVATE ${MUJOCO_RENDER_SRCS})
+
+  # GLAD needs dlopen/dlsym
+  if(CMAKE_DL_LIBS)
+    target_link_libraries(mujoco PRIVATE ${CMAKE_DL_LIBS})
+  endif()
+
 endif()
