@@ -14,16 +14,23 @@
 
 if(MUJOCO_WITH_VK)
 
+  OPTION(WIN32 "Win32 Platform" ON)
+  add_definitions(-DWIN32)
+  add_definitions(-D_WIN32)
+
   set(MUJOCO_RENDER_SRCS
-      render_context_vk.c
+      render_context_vk.cpp
       render_context.h
-      render_vk2.c
+      render_vk2.cpp
       render_vk2.h
-      render_vk3.c
+      render_vk3.cpp
       render_vk3.h
   )
 
   target_sources(mujoco PRIVATE ${MUJOCO_RENDER_SRCS})
+  add_definitions(-DRENDER_ENGINE_EMBED)
+
+  add_subdirectory(render_engine)
 
 else()
 

@@ -135,6 +135,14 @@ target_link_options(
   ${EXTRA_LINK_OPTIONS}
 )
 
+if(MUJOCO_WITH_VK)
+  add_definitions(-DMUJOCO_WITH_VK)
+  find_package (Vulkan REQUIRED)
+  set(render_engine_lib Vulkan::Vulkan glfw render_engine)
+else()
+  set(render_engine_lib)
+endif()
+
 target_link_libraries(
   mujoco
   PRIVATE ccd
@@ -142,6 +150,7 @@ target_link_libraries(
           qhullstatic_r
           tinyobjloader
           tinyxml2
+          ${render_engine_lib}
 )
 
 set_target_properties(
