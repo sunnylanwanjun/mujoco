@@ -787,6 +787,9 @@ MJAPI void mjr_label(mjrRect viewport, int font, const char* txt,
 // Draw 2D figure.
 MJAPI void mjr_figure(mjrRect viewport, mjvFigure* fig, const mjrContext* con);
 
+// Render Init
+MJAPI void* mjr_init(mjrRect viewport, mjvScene* scn, const mjrContext* con);
+
 // Render 3D scene.
 MJAPI void mjr_render(mjrRect viewport, mjvScene* scn, const mjrContext* con);
 
