@@ -1,9 +1,18 @@
 set(LOGIC_MODULE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/logic)
 set(ENGINE_MODULE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(CORE_MODULE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/core)
 
 set(LOGIC_MODULE
-${LOGIC_MODULE_ROOT}/model_loading.cpp
+#${LOGIC_MODULE_ROOT}/model_loading.cpp
+${LOGIC_MODULE_ROOT}/mujoco_rendering.cpp
 ${LOGIC_MODULE_ROOT}/application.cpp
+${CORE_MODULE_ROOT}/geo_utils.cpp
+${CORE_MODULE_ROOT}/geo_utils.h
+${CORE_MODULE_ROOT}/gpu_resource.cpp
+${CORE_MODULE_ROOT}/gpu_resource.h
+${CORE_MODULE_ROOT}/gpu_buffer.cpp
+${CORE_MODULE_ROOT}/gpu_buffer.h
+${CORE_MODULE_ROOT}/core_common.h
 )
 
 source_group(TREE ${ENGINE_MODULE_ROOT} FILES
@@ -26,6 +35,7 @@ target_include_directories(
          $<TARGET_PROPERTY:glfw,INTERFACE_INCLUDE_DIRECTORIES>
          $<TARGET_PROPERTY:tinyobjloader,INTERFACE_INCLUDE_DIRECTORIES>
          ${CMAKE_CURRENT_SOURCE_DIR}/external/stb
+         ${CMAKE_CURRENT_SOURCE_DIR}
          ${Vulkan_INCLUDE_DIRS}
 )
 
