@@ -12,6 +12,14 @@ ${CORE_MODULE_ROOT}/gpu_resource.cpp
 ${CORE_MODULE_ROOT}/gpu_resource.h
 ${CORE_MODULE_ROOT}/gpu_buffer.cpp
 ${CORE_MODULE_ROOT}/gpu_buffer.h
+${CORE_MODULE_ROOT}/gpu_image.cpp
+${CORE_MODULE_ROOT}/gpu_image.h
+${CORE_MODULE_ROOT}/swap_chain.cpp
+${CORE_MODULE_ROOT}/swap_chain.h
+${CORE_MODULE_ROOT}/device.cpp
+${CORE_MODULE_ROOT}/device.h
+${CORE_MODULE_ROOT}/frame_buffer.cpp
+${CORE_MODULE_ROOT}/frame_buffer.h
 ${CORE_MODULE_ROOT}/core_common.h
 )
 

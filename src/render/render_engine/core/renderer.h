@@ -4,10 +4,12 @@
 
 NS_BEGIN
 
-class MeshBuilder {
+class Renderer {
 public:
-    MeshBuilder();
-    ~MeshBuilder();
+    Renderer();
+    ~Renderer();
+
+private:
 };
 
 NS_END

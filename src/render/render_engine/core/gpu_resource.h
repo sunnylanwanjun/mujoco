@@ -2,23 +2,22 @@
 
 #include "core_common.h"
 #include "vulkan/vulkan.h"
+#include "device.h"
 
 NS_BEGIN
 
 class GpuResource {
 public:
-    GpuResource();
+    GpuResource(const Device& device);
     virtual ~GpuResource();
-    void Init(VkDevice device, 
-        VkCommandPool commandPool, 
-        VkQueue graphicsQueue,
-        VkPhysicalDevice physicalDevice);
     
-    void Upload(void* srcData, size_t bytesCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags property);
+    void Upload(void* srcData, size_t bytesCount);
+    void SetUsage(VkBufferUsageFlags usage) { _usage = usage; _isDirty = true; }
+    void SetProperty(VkMemoryPropertyFlags property) { _property = property; _isDirty = true; }
+    virtual void Destroy() = 0;
 
 protected:
-    virtual void updateBuffer(VkBuffer stagingBuffer, size_t bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags property) = 0;
-
+    virtual void updateBuffer(VkBuffer stagingBuffer, size_t bufferSize) = 0;
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -29,10 +28,11 @@ protected:
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 protected:
-    VkDevice _device;
-    VkCommandPool _commandPool;
-    VkQueue _graphicsQueue;
-    VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+    bool _isDirty = true;
+    const Device& _device;
+
+    VkBufferUsageFlags _usage = 0;
+    VkMemoryPropertyFlags _property = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 };
 
 NS_END
