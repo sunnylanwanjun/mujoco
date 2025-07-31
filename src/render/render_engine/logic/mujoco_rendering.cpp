@@ -24,11 +24,14 @@
 #include "core/swap_chain.h"
 #include "core/device.h"
 #include "core/frame_buffer.h"
+#include "core/render_common.h"
+#include "core/file_utils.h"
+#include "core/shader.h"
+
+using namespace RenderEngine;
 
 const std::string MODEL_PATH = WORKING_DIR"models/viking_room.obj";
 const std::string TEXTURE_PATH = WORKING_DIR"textures/viking_room.png";
-
-const int MAX_FRAMES_IN_FLIGHT = 2;
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
@@ -38,20 +41,20 @@ struct UniformBufferObject {
 
 class MujocoRendering : public Application {
 protected:
-    RenderEngine::Device _device;
-    RenderEngine::SwapChain _swapChain{ _device };
-    RenderEngine::FrameBuffer _frameBuffer{ _device, _swapChain};
+    Device _device;
+    SwapChain _swapChain{ _device };
+    FrameBuffer _frameBuffer{ _device, _swapChain};
 
     VkRenderPass renderPass;
-    
+
     VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
-    RenderEngine::GpuImage _texture{ _device };
-    RenderEngine::GpuBuffer _vertexBuffer{ _device };
-    RenderEngine::GpuBuffer _indexBuffer{ _device };
-    std::vector<RenderEngine::GpuBuffer> _uniformBuffers;
+    GpuImage _texture{ _device };
+    GpuBuffer _vertexBuffer{ _device };
+    GpuBuffer _indexBuffer{ _device };
+    std::vector<GpuBuffer> _uniformBuffers;
 
     VkDescriptorPool descriptorPool;
     std::vector<VkDescriptorSet> descriptorSets;
@@ -214,25 +217,7 @@ protected:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile(WORKING_DIR"shaders/27_shader_depth.vert.spv");
-        auto fragShaderCode = readFile(WORKING_DIR"shaders/27_shader_depth.frag.spv");
-
-        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
-
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertShaderModule;
-        vertShaderStageInfo.pName = "main";
-
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;
-        fragShaderStageInfo.pName = "main";
-
-        VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+        Shader shader{_device, WORKING_DIR"shaders/27_shader_depth.vert.spv", WORKING_DIR"shaders/27_shader_depth.frag.spv"};
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -311,10 +296,12 @@ protected:
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
+        auto stageCreateInfo = shader.GetStageCreateInfo();
+
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pStages = stageCreateInfo.data();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
@@ -331,9 +318,6 @@ protected:
         if (vkCreateGraphicsPipelines(_device.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
-
-        vkDestroyShaderModule(_device.GetDevice(), fragShaderModule, nullptr);
-        vkDestroyShaderModule(_device.GetDevice(), vertShaderModule, nullptr);
     }
 
     void createUniformBuffers() {
@@ -622,38 +606,6 @@ protected:
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-    }
-
-    VkShaderModule createShaderModule(const std::vector<char>& code) {
-        VkShaderModuleCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-        VkShaderModule shaderModule;
-        if (vkCreateShaderModule(_device.GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create shader module!");
-        }
-
-        return shaderModule;
-    }
-
-    static std::vector<char> readFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
-        }
-
-        size_t fileSize = (size_t) file.tellg();
-        std::vector<char> buffer(fileSize);
-
-        file.seekg(0);
-        file.read(buffer.data(), fileSize);
-
-        file.close();
-
-        return buffer;
     }
 };
 

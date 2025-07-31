@@ -6,6 +6,8 @@ set(LOGIC_MODULE
 #${LOGIC_MODULE_ROOT}/model_loading.cpp
 ${LOGIC_MODULE_ROOT}/mujoco_rendering.cpp
 ${LOGIC_MODULE_ROOT}/application.cpp
+${CORE_MODULE_ROOT}/file_utils.cpp
+${CORE_MODULE_ROOT}/file_utils.h
 ${CORE_MODULE_ROOT}/geo_utils.cpp
 ${CORE_MODULE_ROOT}/geo_utils.h
 ${CORE_MODULE_ROOT}/gpu_resource.cpp
@@ -20,6 +22,8 @@ ${CORE_MODULE_ROOT}/device.cpp
 ${CORE_MODULE_ROOT}/device.h
 ${CORE_MODULE_ROOT}/frame_buffer.cpp
 ${CORE_MODULE_ROOT}/frame_buffer.h
+${CORE_MODULE_ROOT}/shader.cpp
+${CORE_MODULE_ROOT}/shader.h
 ${CORE_MODULE_ROOT}/core_common.h
 )
 
