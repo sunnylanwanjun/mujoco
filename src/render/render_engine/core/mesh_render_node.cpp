@@ -13,11 +13,11 @@ MeshRenderNode::~MeshRenderNode() {
 }
 
 void MeshRenderNode::Destroy() {
-    vkDestroyPipeline(_device.GetDevice(), graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(_device.GetDevice(), pipelineLayout, nullptr);
-    vkDestroyDescriptorPool(_device.GetDevice(), descriptorPool, nullptr);
+    vkDestroyPipeline(_device.GetDevice(), _graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(_device.GetDevice(), _pipelineLayout, nullptr);
+    vkDestroyDescriptorPool(_device.GetDevice(), _descriptorPool, nullptr);
 
-    vkDestroyDescriptorSetLayout(_device.GetDevice(), descriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(_device.GetDevice(), _descriptorSetLayout, nullptr);
 }
 
 void MeshRenderNode::Create() {
@@ -81,7 +81,7 @@ void MeshRenderNode::CreateDescriptorSetLayout() {
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(_device.GetDevice(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(_device.GetDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
@@ -158,9 +158,9 @@ void MeshRenderNode::CreateGraphicsPipeline() {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
 
-    if (vkCreatePipelineLayout(_device.GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(_device.GetDevice(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
 
@@ -178,12 +178,12 @@ void MeshRenderNode::CreateGraphicsPipeline() {
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = pipelineLayout;
+    pipelineInfo.layout = _pipelineLayout;
     pipelineInfo.renderPass = _renderer.GetRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(_device.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(_device.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 }
@@ -203,7 +203,7 @@ void MeshRenderNode::CreateDescriptorPool() {
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = static_cast<uint32_t>(maxFrameInFlight);
 
-    if (vkCreateDescriptorPool(_device.GetDevice(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+    if (vkCreateDescriptorPool(_device.GetDevice(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
     }
 }
@@ -211,15 +211,15 @@ void MeshRenderNode::CreateDescriptorPool() {
 void MeshRenderNode::CreateDescriptorSets() {
     auto maxFrameInFlight = _renderer.GetMaxFrameInFlight();
 
-    std::vector<VkDescriptorSetLayout> layouts(maxFrameInFlight, descriptorSetLayout);
+    std::vector<VkDescriptorSetLayout> layouts(maxFrameInFlight, _descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = descriptorPool;
+    allocInfo.descriptorPool = _descriptorPool;
     allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFrameInFlight);
     allocInfo.pSetLayouts = layouts.data();
 
-    descriptorSets.resize(maxFrameInFlight);
-    if (vkAllocateDescriptorSets(_device.GetDevice(), &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+    _descriptorSets.resize(maxFrameInFlight);
+    if (vkAllocateDescriptorSets(_device.GetDevice(), &allocInfo, _descriptorSets.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
@@ -237,7 +237,7 @@ void MeshRenderNode::CreateDescriptorSets() {
         std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = descriptorSets[i];
+        descriptorWrites[0].dstSet = _descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -245,7 +245,7 @@ void MeshRenderNode::CreateDescriptorSets() {
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = descriptorSets[i];
+        descriptorWrites[1].dstSet = _descriptorSets[i];
         descriptorWrites[1].dstBinding = 1;
         descriptorWrites[1].dstArrayElement = 0;
         descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -259,13 +259,13 @@ void MeshRenderNode::CreateDescriptorSets() {
 void MeshRenderNode::Execute(VkCommandBuffer commandBuffer) {
 
     size_t currentImage = _renderer.GetCurrentFrame();
-    if (currentImage >= descriptorSets.size()) {
+    if (currentImage >= _descriptorSets.size()) {
         return;
     }
 
     VkExtent2D viewportSize = _renderer.GetViewportSize();
 
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
@@ -287,7 +287,7 @@ void MeshRenderNode::Execute(VkCommandBuffer commandBuffer) {
 
     vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentImage], 0, nullptr);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[currentImage], 0, nullptr);
 
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indicesCount), 1, 0, 0, 0);
 }

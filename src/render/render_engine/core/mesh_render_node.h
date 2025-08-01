@@ -38,9 +38,9 @@ private:
     void CreateDescriptorSets();
     
 private:
-    VkDescriptorSetLayout descriptorSetLayout{ VK_NULL_HANDLE };
-    VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
-    VkPipeline graphicsPipeline{ VK_NULL_HANDLE };
+    VkDescriptorSetLayout _descriptorSetLayout{ VK_NULL_HANDLE };
+    VkPipelineLayout _pipelineLayout{ VK_NULL_HANDLE };
+    VkPipeline _graphicsPipeline{ VK_NULL_HANDLE };
 
     GpuImage _texture{ _device };
     GpuBuffer _vertexBuffer{ _device };
@@ -48,8 +48,8 @@ private:
     Shader _shader{ _device };
     std::vector<GpuBuffer> _uniformBuffers;
 
-    VkDescriptorPool descriptorPool{ VK_NULL_HANDLE };
-    std::vector<VkDescriptorSet> descriptorSets{ VK_NULL_HANDLE };
+    VkDescriptorPool _descriptorPool{ VK_NULL_HANDLE };
+    std::vector<VkDescriptorSet> _descriptorSets{ VK_NULL_HANDLE };
 
     size_t indicesCount = 0;
 };
