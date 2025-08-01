@@ -27,6 +27,8 @@ public:
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) const;
+    VkFormat findDepthFormat() const;
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 private:
     void createInstance();
     void setupDebugMessenger();

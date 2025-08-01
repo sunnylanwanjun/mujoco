@@ -2,16 +2,17 @@
 
 #include "core_common.h"
 #include "vulkan/vulkan.h"
-#include "device.h"
 
 NS_BEGIN
+
+class Device;
 
 class GpuResource {
 public:
     GpuResource(const Device& device);
     virtual ~GpuResource();
     
-    void Upload(void* srcData, size_t bytesCount);
+    void Upload(const void* srcData, size_t bytesCount);
     void SetUsage(VkBufferUsageFlags usage) { _usage = usage; _isDirty = true; }
     void SetProperty(VkMemoryPropertyFlags property) { _property = property; _isDirty = true; }
     virtual void Destroy() = 0;

@@ -1,40 +1,42 @@
 #pragma once
 
 #include "core_common.h"
-#include "device.h"
-#include "swap_chain.h"
+#include <vulkan/vulkan_core.h>
+#include <vector>
+#include "gpu_image.h"
 
 NS_BEGIN
 
+class Device;
+class SwapChain;
+class Renderer;
+
 class FrameBuffer {
 public:
-    FrameBuffer(const Device& device, const SwapChain& swapChain);
+    FrameBuffer(const Device& device, const SwapChain& swapChain, const Renderer& renderer);
     ~FrameBuffer();
 
     void Destroy();
-    void Create(VkRenderPass renderPass);
+    void Create();
 
-    VkFramebuffer GetFrameBuffer(size_t index) {
+    VkFramebuffer GetFrameBuffer(size_t index) const {
         if (index < swapChainFramebuffers.size()) {
             return swapChainFramebuffers[index];
         }
         return VK_NULL_HANDLE;
     }
 
-    VkFormat findDepthFormat() const;
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
-
 private:
-    void createDepthResources();
-    void createFramebuffers();
+    void CreateDepthResources();
+    void CreateFramebuffers();
 
 private:
     const Device& _device;
     const SwapChain& _swapChain;
+    const Renderer& _renderer;
 
-    GpuImage _depthTexture;
+    GpuImage _depthTexture{_device};
     std::vector<VkFramebuffer> swapChainFramebuffers;
-    VkRenderPass _renderPass = VK_NULL_HANDLE;
 };
 
 NS_END

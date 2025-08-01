@@ -1,5 +1,6 @@
 #include "gpu_buffer.h"
 #include <memory>
+#include "device.h"
 
 NS_BEGIN
 

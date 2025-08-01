@@ -1,5 +1,6 @@
 #include "gpu_resource.h"
 #include <stdexcept>
+#include "device.h"
 
 NS_BEGIN
 
@@ -88,7 +89,7 @@ uint32_t GpuResource::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags 
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void GpuResource::Upload(void* srcData, size_t bytesCount) {
+void GpuResource::Upload(const void* srcData, size_t bytesCount) {
     VkDeviceSize bufferSize = bytesCount;
 
     VkBuffer stagingBuffer;

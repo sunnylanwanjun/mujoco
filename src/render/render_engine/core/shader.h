@@ -1,16 +1,25 @@
 #pragma once
 
 #include "core_common.h"
-#include "device.h"
 #include <string>
 #include <vulkan/vulkan_core.h>
+#include <vector>
 
 NS_BEGIN
 
+class Device;
+
 class Shader {
 public:
-    Shader(const Device& device, const std::string& vs, const std::string& fs);
+    Shader(const Device& device);
     ~Shader();
+
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
+    Shader(const Shader&&) = delete;
+
+    void Destroy();
+    void Create(const std::string& vs, const std::string& fs);
 
     VkShaderModule GetVS() { return vertShaderModule; }
     VkShaderModule GetFS() { return fragShaderModule; }

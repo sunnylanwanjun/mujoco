@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "device.h"
+
 NS_BEGIN
 
 GpuImage::GpuImage(const Device& device): GpuResource(device) {

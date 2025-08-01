@@ -15,6 +15,8 @@ public:
     void WriteWithPersistentMap(void* data, size_t bytesCount);
     void Create(size_t bufferSize);
 
+    size_t GetBufferSize() const { return _bufferSize; }
+
 protected:
     void updateBuffer(VkBuffer stagingBuffer, size_t bufferSize) override;
 

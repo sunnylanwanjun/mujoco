@@ -2,10 +2,33 @@
 #include <vector>
 #include "file_utils.h"
 #include <stdexcept>
+#include "device.h"
 
 NS_BEGIN
 
-Shader::Shader(const Device& device, const std::string& vs, const std::string& fs):_device(device) {
+Shader::Shader(const Device& device):_device(device) {
+    
+}
+
+Shader::~Shader() {
+    Destroy();
+}
+
+void Shader::Destroy() {
+    if (fragShaderModule != VK_NULL_HANDLE) {
+        vkDestroyShaderModule(_device.GetDevice(), fragShaderModule, nullptr);
+        fragShaderModule = VK_NULL_HANDLE;
+    }
+    
+    if (vertShaderModule != VK_NULL_HANDLE) {
+        vkDestroyShaderModule(_device.GetDevice(), vertShaderModule, nullptr);
+        vertShaderModule = VK_NULL_HANDLE;
+    }
+}
+
+void Shader::Create(const std::string& vs, const std::string& fs) {
+    Destroy();
+
     auto vertShaderCode = ReadFile(vs);
     auto fragShaderCode = ReadFile(fs);
 
@@ -25,11 +48,6 @@ Shader::Shader(const Device& device, const std::string& vs, const std::string& f
     fragShaderStageInfo.pName = "main";
 
     createInfo = {vertShaderStageInfo, fragShaderStageInfo};
-}
-
-Shader::~Shader() {
-    vkDestroyShaderModule(_device.GetDevice(), fragShaderModule, nullptr);
-    vkDestroyShaderModule(_device.GetDevice(), vertShaderModule, nullptr);
 }
 
 VkShaderModule Shader::createShaderModule(const std::vector<char>& code) {

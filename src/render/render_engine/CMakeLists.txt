@@ -24,6 +24,12 @@ ${CORE_MODULE_ROOT}/frame_buffer.cpp
 ${CORE_MODULE_ROOT}/frame_buffer.h
 ${CORE_MODULE_ROOT}/shader.cpp
 ${CORE_MODULE_ROOT}/shader.h
+${CORE_MODULE_ROOT}/mesh_render_node.cpp
+${CORE_MODULE_ROOT}/mesh_render_node.h
+${CORE_MODULE_ROOT}/render_node.cpp
+${CORE_MODULE_ROOT}/render_node.h
+${CORE_MODULE_ROOT}/renderer.cpp
+${CORE_MODULE_ROOT}/renderer.h
 ${CORE_MODULE_ROOT}/core_common.h
 )
 

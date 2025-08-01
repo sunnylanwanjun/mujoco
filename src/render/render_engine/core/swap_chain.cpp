@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <array>
 #include "render_common.h"
+#include "device.h"
 
 NS_BEGIN
 

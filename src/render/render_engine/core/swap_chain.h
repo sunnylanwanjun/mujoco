@@ -7,6 +7,8 @@
 
 NS_BEGIN
 
+class Device;
+
 class SwapChain {
 public:
     SwapChain(const Device& device);
@@ -17,7 +19,7 @@ public:
 
     VkFormat GetFormat() const { return swapChainImageFormat; }
 
-    VkExtent2D GetExtent() const { return swapChainExtent; }
+    VkExtent2D GetViewportSize() const { return swapChainExtent; }
     VkSwapchainKHR GetSwapChain() const { return swapChain; }
 
     const std::vector<VkImageView>& GetSwapChainImageViews() const {
